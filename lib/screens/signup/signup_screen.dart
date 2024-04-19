@@ -7,7 +7,7 @@ import 'package:student_feeedback/components/sized.dart';
 import 'package:student_feeedback/components/text_field.dart';
 
 import '../../components/dropdown.dart';
-import '../../components/provider_const.dart';
+import '../../provider/provider_const.dart';
 
 class SignupScreen extends ConsumerWidget {
   const SignupScreen({super.key});

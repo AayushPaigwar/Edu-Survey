@@ -25,6 +25,11 @@ class FeedBackScreen extends StatelessWidget {
             const SizedBox(height: 20.0),
             const TextField(
               decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.grey,
+                  ),
+                ),
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 40, horizontal: 20),
                 enabledBorder: OutlineInputBorder(

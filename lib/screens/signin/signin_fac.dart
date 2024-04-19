@@ -10,7 +10,7 @@ import 'package:student_feeedback/components/sized.dart';
 import 'package:student_feeedback/model/supabase_function.dart';
 
 import '../../components/dropdown.dart';
-import '../../components/provider_const.dart';
+import '../../provider/provider_const.dart';
 import '../../components/text_field.dart';
 import '../signup/signup_screen.dart';
 import '../viewfeedback.dart';

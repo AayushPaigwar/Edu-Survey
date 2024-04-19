@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../components/provider_const.dart';
+import '../provider/provider_const.dart';
 import 'feedback_screen.dart';
 
 class SelectDepartment extends ConsumerWidget {

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'provider_const.dart';
+import '../provider/provider_const.dart';
 
 class MyDeptDropDown extends ConsumerWidget {
   const MyDeptDropDown({super.key});
