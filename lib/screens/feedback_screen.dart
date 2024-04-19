@@ -9,13 +9,16 @@ class FeedBackScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Students Feedback'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Feedback for",
+              "Feedback",
               style: GoogleFonts.poppins(
                 fontSize: 25.0,
                 fontWeight: FontWeight.w600,

@@ -11,9 +11,8 @@ Future<void> main() async {
   await dotenv.load(fileName: "assets/.env");
 
   await Supabase.initialize(
-    url: "https://gaamuhzfpfdvfakdfzew.supabase.co",
-    anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhYW11aHpmcGZkdmZha2RmemV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE5NjgxOTEsImV4cCI6MjAxNzU0NDE5MX0.3oRlKrnP3oRs0uck4G5rgDkebdkehGVmd_YG_pSprvI",
+    url: dotenv.env["SUPABASE_URL"]!,
+    anonKey: dotenv.env["SUPABASE_KEY"]!,
   );
   runApp(
     const ProviderScope(
