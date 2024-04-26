@@ -4,21 +4,31 @@ import 'dart:developer';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:student_feeedback/screens/feedback_screen.dart';
+import 'package:student_feeedback/screens/feedback_stu.dart';
 
 import '../../components/text_field.dart';
 import '../../model/supabase_function.dart';
-import '../signup/signup_screen.dart';
+import '../../provider/provider_const.dart';
 
-class SignInStu extends StatelessWidget {
+class SignInStu extends ConsumerWidget {
   const SignInStu({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Student Login",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -57,12 +67,11 @@ class SignInStu extends StatelessWidget {
                 String password = passwordController.text;
                 final sm = ScaffoldMessenger.of(context);
 
-                //supaase function
+                //supaase function signin
                 try {
                   final result =
                       await SupabaseFunction().signinStudent(email, password);
 
-                  // log(result.toString());
                   if (result.isEmpty) {
                     log("No data found");
                     sm.showSnackBar(
@@ -78,9 +87,22 @@ class SignInStu extends StatelessWidget {
                         content: Text("Sign In Successfull"),
                       ),
                     );
+
+                    //supabase function to get Student ID
+                    final studentIdResponse =
+                        await SupabaseFunction().getStudentId(email);
+                    if (studentIdResponse.isNotEmpty) {
+                      // Access student ID from the first element of the response
+                      final studentId = studentIdResponse[0]['id'].toString();
+                      // Update studentIdProvider with the retrieved ID
+                      ref.read(studentIdProvider.notifier).state = studentId;
+                      log("Student ID: $studentIdResponse");
+                    }
+
+                    // Navigate to StudentFeedbackScreen
                     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
                       builder: (context) {
-                        return const FeedBackScreen();
+                        return const StudentFeedbackScreen();
                       },
                     ), (route) => false);
                     //clear controller
@@ -111,10 +133,7 @@ class SignInStu extends StatelessWidget {
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
                     log("Sign Up");
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const SignupScreen();
-                    }));
+                    Navigator.pushNamed(context, '/signup');
                   },
                 text: "Sign Up",
                 style: GoogleFonts.poppins(

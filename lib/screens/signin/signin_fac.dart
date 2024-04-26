@@ -10,21 +10,29 @@ import 'package:student_feeedback/components/sized.dart';
 import 'package:student_feeedback/model/supabase_function.dart';
 
 import '../../components/dropdown.dart';
-import '../../provider/provider_const.dart';
 import '../../components/text_field.dart';
-import '../signup/signup_screen.dart';
-import '../viewfeedback.dart';
+import '../../provider/provider_const.dart';
+import '../feedback_fac.dart';
 
 class SigninFac extends ConsumerWidget {
-  const SigninFac({super.key});
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  SigninFac({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
     String? departmentSelected = ref.watch(selectedDepartmentProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Faculty Login",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -82,10 +90,6 @@ class SigninFac extends ConsumerWidget {
                     );
                   }
                   if (result.isNotEmpty) {
-                    log("Data found");
-                    log("$department ok");
-                    log("$email ok");
-                    log("$password ok");
                     sm.showSnackBar(
                       const SnackBar(
                         content: Text("Sign In Successfull"),
@@ -124,10 +128,7 @@ class SigninFac extends ConsumerWidget {
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
                         log("Sign Up");
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return const SignupScreen();
-                        }));
+                        Navigator.pushNamed(context, '/signup');
                       },
                     text: "Sign Up",
                     style: GoogleFonts.poppins(

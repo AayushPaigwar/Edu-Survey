@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:student_feeedback/components/sized.dart';
-import 'package:student_feeedback/screens/signin/signin_stu.dart';
-
-import 'signin_fac.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
@@ -35,13 +32,13 @@ class SignInScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0)),
               tileColor: const Color(0xff0000FE),
-              title: const Center(child: Text("Student")),
+              title: const Center(
+                child: Text("Student"),
+              ),
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const SignInStu(),
-                  ),
+                  '/signinstu',
                 );
               },
             ),
@@ -52,12 +49,7 @@ class SignInScreen extends StatelessWidget {
               tileColor: const Color(0xff0000FE),
               title: const Center(child: Text("Faculty")),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SigninFac(),
-                  ),
-                );
+                Navigator.pushNamed(context, '/signinfac');
               },
             ),
           ],

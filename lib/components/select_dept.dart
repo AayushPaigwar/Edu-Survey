@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../provider/provider_const.dart';
-import 'feedback_screen.dart';
 
 class SelectDepartment extends ConsumerWidget {
   const SelectDepartment({super.key});
@@ -45,11 +44,9 @@ class SelectDepartment extends ConsumerWidget {
                         tileColor: const Color(0xff0000FE),
                         title: Center(child: Text(departments[index])),
                         onTap: () {
-                          Navigator.push(
+                          Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => const FeedBackScreen(),
-                            ),
+                            '/feedbackfac',
                           );
                           log("Department $index");
                         },

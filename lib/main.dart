@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:student_feeedback/screens/feedback_stu.dart';
+import 'package:student_feeedback/screens/signup/signup_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'screens/signin/signin_fac.dart';
 import 'screens/signin/signin_screen.dart';
+import 'screens/signin/signin_stu.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +33,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark(),
-      home: const SignInScreen(),
+      debugShowCheckedModeBanner: false,
+      routes: {
+        '/': (context) => const SignInScreen(),
+        '/signinstu': (context) => const SignInStu(),
+        '/signinfac': (context) => SigninFac(),
+        '/signup': (context) => SignupScreen(),
+        '/feedbackstu': (context) => const StudentFeedbackScreen(),
+      },
+      theme: ThemeData(
+          fontFamily: GoogleFonts.poppins().fontFamily,
+          brightness: Brightness.dark),
+      initialRoute: '/',
     );
   }
 }
