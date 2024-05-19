@@ -31,7 +31,7 @@ class _MyTextFieldState extends State<MyTextField> {
         obscureText: widget.obscureText,
         style: GoogleFonts.poppins(),
         decoration: InputDecoration(
-//content padding
+          //content padding
           contentPadding:
               const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
 

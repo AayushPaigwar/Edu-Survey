@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student_feeedback/components/sized.dart';
@@ -19,9 +21,18 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
   final _selectedAnswers = List<String>.filled(5, '');
 
   @override
+  void initState() {
+    super.initState();
+    // Fetch the question list
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(questionListProvider);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     //question list from provider
-    final _questions = ref.read(questionListProvider);
+    final questionProvider = ref.read(questionListProvider);
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -47,8 +58,20 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
             key: _formKey,
             child: Column(
               children: [
-                for (final question in _questions)
-                  buildMCQQuestion(question, ref),
+                questionProvider.when(
+                  data: (questions) {
+                    return Column(
+                      children: [
+                        for (final question in questions)
+                          buildMCQQuestion(question, ref),
+                      ],
+                    );
+                  },
+                  loading: () => const CircularProgressIndicator(),
+                  error: (error, stackTrace) => Text('Error: $error'),
+                ),
+                // for (final question in questions)
+                //   buildMCQQuestion(question, ref),
                 buildHeight(30),
                 MaterialButton(
                   shape: RoundedRectangleBorder(
@@ -73,15 +96,44 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
   }
 
 // Add a TextField to buildMCQQuestion
+  // Widget buildMCQQuestion(Map<String?, dynamic> question, WidgetRef ref) {
+  //   // final questions = ref.read(questionListProvider);
+  //   // int questionIndex = questions.indexOf(question);
+  //   return
+  //   Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(question['text']),
+  //       const SizedBox(height: 8.0),
+  //       for (final option in question['options'] as List<String>)
+  //         // RadioListTile<String>(
+  //         //   title: Text(option),
+  //         //   value: option,
+  //         //   groupValue: _selectedAnswers[questionIndex],
+  //         //   onChanged: (value) =>
+  //         //       setState(() => _selectedAnswers[questionIndex] = value!),
+  //         // ),
+  //         const Divider(),
+  //     ],
+  //   );
+  // }
   Widget buildMCQQuestion(Map<String?, dynamic> question, WidgetRef ref) {
-    final questions = ref.read(questionListProvider);
-    int questionIndex = questions.indexOf(question);
+    final questionsAsyncValue = ref.watch(questionListProvider);
+    int questionIndex = 0;
+
+    if (questionsAsyncValue is AsyncData<List<Map<String, dynamic>>>) {
+      final questions = questionsAsyncValue.value;
+      questionIndex = questions.indexOf(question as Map<String, dynamic>);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(question['text']),
+        Text(question['question']),
         const SizedBox(height: 8.0),
-        for (final option in question['options'] as List<String>)
+
+        // radio buttons form the supabse options column
+        for (final option in question['options'])
           RadioListTile<String>(
             title: Text(option),
             value: option,
@@ -89,6 +141,7 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
             onChanged: (value) =>
                 setState(() => _selectedAnswers[questionIndex] = value!),
           ),
+
         const Divider(),
       ],
     );
@@ -96,76 +149,48 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
 
 // Use _feedbackTexts in _submitFeedback
   void _submitFeedback(WidgetRef ref) async {
-    final questions = ref.read(questionListProvider);
+    final questionsAsyncValue = ref.read(questionListProvider);
     final client = Supabase.instance.client;
     final studentId = ref.read(studentIdProvider);
-    final department = ref.read(selectedDepartmentProvider);
 
-    var feedbacks = questions.asMap().entries.map((entry) {
-      int i = entry.key;
-      var question = entry.value;
-      return {
+    if (questionsAsyncValue is AsyncData) {
+      var questions = questionsAsyncValue.value;
+
+      var feedbackList = questions!.asMap().entries.map((entry) {
+        int i = entry.key;
+        return _selectedAnswers[i];
+      }).toList();
+      var questionids = questions.map((question) => question['id']).toList();
+
+      var feedbacks = {
         'student_id': studentId,
-        'question_id': question['id'],
-        'feedback': _selectedAnswers[i],
-        'department': department,
+        'question_id': questionids,
+        'feedbacks': feedbackList,
       };
-    }).toList();
 
-    var response = await client.from('feedback').upsert(feedbacks);
+      log(_selectedAnswers.toString());
 
-    if (response != null) {
-      // Handle specific Supabase error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content:
-              Text('Failed to submit feedback: ${response.error!.message}'),
-        ),
-      );
-    } else {
-      // Feedback submitted successfully
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Feedback submitted successfully'),
-        ),
-      );
+      var response = await client.from('feedback').upsert(feedbacks);
 
-      // Clear the selected answers
-      Navigator.pushNamed(context, '/');
+      if (response != null) {
+        // Handle specific Supabase error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Failed to submit feedback: ${response.error!.message}'),
+          ),
+        );
+      } else {
+        // Feedback submitted successfully
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Feedback submitted successfully'),
+          ),
+        );
+
+        // Clear the selected answers
+        Navigator.pushNamed(context, '/');
+      }
     }
-
-    //   if (response == null) {
-    //     log(response.toString());
-    //     // Handle complete operation failure (e.g., network issue)
-    //     // ScaffoldMessenger.of(context).showSnackBar(
-    //     //   const SnackBar(
-    //     //     content: Text('Failed to submit feedback.'),
-    //     //   ),
-    //     // );
-    //     return;
-    //   }
-
-    //   try {
-    //     if (response.error != null) {
-    //       // Handle specific Supabase error
-    //       // ScaffoldMessenger.of(context).showSnackBar(
-    //       //   SnackBar(
-    //       //     content:
-    //       //         Text('Failed to submit feedback: ${response.error.message}'),
-    //       //   ),
-    //       // );
-    //     } else {
-    //       // Feedback submitted successfully
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         const SnackBar(
-    //           content: Text('Feedback submitted successfully'),
-    //         ),
-    //       );
-    //     }
-    //   } catch (error) {
-    //     // log('Failed to submit feedback: $error');
-    //     // Display a generic error message to the user (optional)
-    //   }
-    // }
   }
 }
