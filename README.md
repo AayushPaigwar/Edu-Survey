@@ -14,3 +14,9 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+
+Description: Developed a School Feedback Management System with separate login and signup for faculty and students. 
+Enabled department-segregated feedback collection, real-time data management, and a faculty dashboard for insights and reporting. 
+Built with Flutter for a crossplatfrom interface and Supabase for secure backend services.
