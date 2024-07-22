@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:developer';
 
 import 'package:flutter/gestures.dart';
@@ -21,11 +19,20 @@ class SignInStu extends ConsumerWidget {
     final TextEditingController passwordController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.grey,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        centerTitle: true,
         title: Text(
           "Student Login",
           style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+            color: Colors.grey,
           ),
         ),
       ),
@@ -55,19 +62,19 @@ class SignInStu extends ConsumerWidget {
               controller: passwordController,
             ),
             const SizedBox(height: 15.0),
-            // const MyDeptDropDown(),
             const SizedBox(height: 15.0),
             MaterialButton(
+              height: 50.0,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),
-              color: const Color(0xff0000FE),
+              color: const Color(0xff5c0f8b),
               minWidth: double.infinity,
               onPressed: () async {
                 String email = emailController.text;
                 String password = passwordController.text;
                 final sm = ScaffoldMessenger.of(context);
 
-                //supaase function signin
+                // Supabase function signin
                 try {
                   final result =
                       await SupabaseFunction().signinStudent(email, password);
@@ -88,7 +95,7 @@ class SignInStu extends ConsumerWidget {
                       ),
                     );
 
-                    //supabase function to get Student ID
+                    // Supabase function to get Student ID
                     final studentIdResponse =
                         await SupabaseFunction().getStudentId(email);
                     if (studentIdResponse.isNotEmpty) {
@@ -105,7 +112,7 @@ class SignInStu extends ConsumerWidget {
                         return const StudentFeedbackScreen();
                       },
                     ), (route) => false);
-                    //clear controller
+                    // Clear controller
                     emailController.clear();
                     passwordController.clear();
                   }

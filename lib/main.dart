@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_feeedback/screens/feedback_stu.dart';
 import 'package:student_feeedback/screens/signup/signup_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'screens/feedback_fac.dart';
 import 'screens/signin/signin_fac.dart';
 import 'screens/signin/signin_screen.dart';
 import 'screens/signin/signin_stu.dart';
+import 'screens/viewfeedback.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,17 +22,25 @@ Future<void> main() async {
     url: dotenv.env["SUPABASE_URL"]!,
     anonKey: dotenv.env["SUPABASE_KEY"]!,
   );
+
+  final bool isLoggedIn = await _checkLoginStatus();
+
   runApp(
-    const ProviderScope(
-      child: MyApp(),
+    ProviderScope(
+      child: MyApp(isLoggedIn: isLoggedIn),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+Future<bool> _checkLoginStatus() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getBool('isLoggedIn') ?? false;
+}
 
-  // This widget is the root of your application.
+class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
+  const MyApp({required this.isLoggedIn, super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -40,11 +51,14 @@ class MyApp extends StatelessWidget {
         '/signinfac': (context) => SigninFac(),
         '/signup': (context) => SignupScreen(),
         '/feedbackstu': (context) => const StudentFeedbackScreen(),
+        '/feedbackfac': (context) => const ViewFeedBack(),
+        '/viewfeedback': (context) => const ViewStudentFeedback(),
       },
       theme: ThemeData(
-          fontFamily: GoogleFonts.poppins().fontFamily,
-          brightness: Brightness.dark),
-      initialRoute: '/',
+        fontFamily: GoogleFonts.poppins().fontFamily,
+        brightness: Brightness.dark,
+      ),
+      initialRoute: isLoggedIn ? '/feedbackfac' : '/',
     );
   }
 }

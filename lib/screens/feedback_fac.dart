@@ -1,9 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_feeedback/screens/signin/signin_screen.dart';
-import 'package:student_feeedback/screens/viewfeedback.dart';
 
 import '../model/supabase_function.dart';
 import '../provider/provider_const.dart';
@@ -24,41 +20,23 @@ class _ViewFeedBackState extends ConsumerState<ViewFeedBack> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('View Feedback'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SignInScreen(),
-                  ),
-                  (route) => false);
-            },
-            icon: const Icon(Icons.logout),
-          ),
-        ],
       ),
       body: FutureBuilder(
         future: getfeedbacks,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return const Center(
-              child: Text('Error fetching data'),
-            );
+            return const Center(child: Text('Error fetching data'));
           }
           final feedbackData = snapshot.data!;
-
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              // to get student name
-              final studentId = feedbackData[index]['student_id']; //
+              final studentId = feedbackData[index]['student_id'];
               final studentNameFuture =
                   SupabaseFunction().getStudentName(studentId.toString());
 
@@ -69,43 +47,48 @@ class _ViewFeedBackState extends ConsumerState<ViewFeedBack> {
                     return Container();
                   }
                   if (snapshot.hasError) {
-                    return const Center(
-                      child: Text('Error fetching data'),
-                    );
+                    return const Center(child: Text('Error fetching data'));
                   }
                   final studentName = snapshot.data![0]['name'];
-                  log(snapshot.data.toString());
+                  final department = snapshot.data![0]['department'];
 
-                  // final questions = ref.read(questionListProvider);
                   return InkWell(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ViewStudentFeedback(),
-                        ),
-                      );
+                      //navigate to feedback page'
+                      Navigator.pushNamed(context, '/viewfeedback', arguments: {
+                        'studentName': studentName,
+                        'department': department,
+                      });
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border:
-                            Border.all(color: Colors.grey.shade800, width: 0.5),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      margin: const EdgeInsets.all(10.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Student Name: $studentName'),
-                            Text(
-                                'Question_id: ${feedbackData[index]['question_id']}'),
-                            Text(
-                                'Feedback: ${feedbackData[index]['feedbacks']}'),
-                          ],
+                    child: Card(
+                      elevation: 4,
+                      margin: const EdgeInsets.all(10),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 16),
+                        title: Text(
+                          studentName,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          '$department',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        leading: CircleAvatar(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: Text(
+                            studentName[0],
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),

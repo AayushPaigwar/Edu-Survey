@@ -9,9 +9,10 @@ class SignInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(
           "Feedback App",
-          style: GoogleFonts.poppins(color: Colors.white70),
+          style: GoogleFonts.poppins(color: Colors.grey),
         ),
       ),
       body: Padding(
@@ -20,6 +21,8 @@ class SignInScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            //feedback icon
+
             Text(
               "LOGIN AS A",
               style: GoogleFonts.poppins(
@@ -31,7 +34,7 @@ class SignInScreen extends StatelessWidget {
             ListTile(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0)),
-              tileColor: const Color(0xff0000FE),
+              tileColor: const Color(0xff5c0f8b),
               title: const Center(
                 child: Text("Student"),
               ),
@@ -46,7 +49,7 @@ class SignInScreen extends StatelessWidget {
             ListTile(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0)),
-              tileColor: const Color(0xff0000FE),
+              tileColor: const Color(0xff5c0f8b),
               title: const Center(child: Text("Faculty")),
               onTap: () {
                 Navigator.pushNamed(context, '/signinfac');

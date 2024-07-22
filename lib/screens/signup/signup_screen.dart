@@ -25,13 +25,14 @@ class SignupScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 buildHeight(20.0),
                 const Text(
@@ -70,7 +71,7 @@ class SignupScreen extends ConsumerWidget {
                 buildHeight(30.0),
                 //signup button
                 MaterialButton(
-                  color: const Color(0xff0000FE),
+                  color: const Color(0xff5c0f8b),
                   height: 50.0,
                   minWidth: MediaQuery.of(context).size.width * 0.95,
                   shape: RoundedRectangleBorder(

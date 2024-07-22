@@ -45,17 +45,6 @@ class SupabaseFunction {
     return [];
   }
 
-  //Function to get all the feedbacks
-  Future<List<Map<String, dynamic>>> getFeedbacks(dynamic studentId) async {
-    try {
-      final response = await client.from("feedback").select("*");
-      return response;
-    } catch (e) {
-      log(e.toString());
-    }
-    return [];
-  }
-
   //Sign up a student
   Future<List<Map<String, dynamic>>> signupStudent(
     String name,
@@ -112,20 +101,6 @@ class SupabaseFunction {
     return [];
   }
 
-  //Function to view feedback according to the department
-  Future<List<Map<String, dynamic>>> viewFeedback(String department) async {
-    try {
-      final response = await client
-          .from("feedback")
-          .select("*")
-          .eq('department', department);
-      return response;
-    } catch (e) {
-      log(e.toString());
-    }
-    return [];
-  }
-
   //access student ID
   Future<List<Map<String, dynamic>>> getStudentId(String email) async {
     try {
@@ -142,9 +117,38 @@ class SupabaseFunction {
   //access student name from student ID
   Future<List<Map<String, dynamic>>> getStudentName(String studentId) async {
     try {
-      final response =
-          await client.from("student").select("name").eq('id', studentId);
+      final response = await client
+          .from("student")
+          .select("name, department")
+          .eq('id', studentId);
 
+      return response;
+    } catch (e) {
+      log(e.toString());
+    }
+    return [];
+  }
+
+  //Function to view feedback according to the department
+  // Future<List<Map<String, dynamic>>> viewFeedback(String department) async {
+  //   try {
+  //     final response = await client
+  //         .from("feedback")
+  //         .select("*")
+  //         .eq('department', department);
+  //     return response;
+  //   } catch (e) {
+  //     log(e.toString());
+  //   }
+  //   return [];
+  // }
+
+  //Function to get all the feedbacks
+  Future<List<Map<String, dynamic>>> getFeedbacks(dynamic studentId) async {
+    try {
+      final response = await client.from("feedback").select("*");
+
+      log(response.toString(), name: 'getFeedbacks');
       return response;
     } catch (e) {
       log(e.toString());
@@ -163,63 +167,54 @@ class SupabaseFunction {
     return [];
   }
 
-// //Function to get feedback
+  Future<List<Map<String, dynamic>>> getQuestionsAndFeedbacks(
+      String studentId) async {
+    try {
+      // Fetch feedbacks for a department
+      final feedbacksData = await getFeedbacks(studentId);
+      if (feedbacksData.isEmpty) {
+        return [];
+      }
+      List<dynamic> questionIds = feedbacksData.first['question_id'];
+      List<dynamic> feedbacks = feedbacksData.first['feedbacks'];
 
-// Future<String> fetchFeedback(String questionId) async {
-//   final client = Supabase.instance.client;
-//   var response = await client
-//       .from('feedbacks')
-//       .select('feedback')
-//       .eq('question_id', questionId)
-//       .single();
+      //Fetch all questions and filter by questionIds
+      final allQuestions = await getQuestions();
+      List<Map<String, dynamic>> relevantQuestions = allQuestions
+          .where((question) => questionIds.contains(question['id']))
+          .toList();
 
-//   if (response.isNotEmpty) {
-//     return response['feedback'];
-//   } else {
-//     throw Exception('Failed to fetch feedback: $response');
-//   }
+      // log(relevantQuestions.toString(), name: 'revelantQuestions');
 
-// // Function to fetch question from question_id
-//   Future<List<Map<String, dynamic>>> fetchQuestion(String questionId) async {
-//     try {
-//       final response = await client
-//           .from("questions")
-//           .select("question")
-//           .eq('id', questionId);
+      // Combine questions with their feedbacks
+      List<Map<String, dynamic>> combinedData = [];
+      for (int i = 0; i < relevantQuestions.length; i++) {
+        combinedData.add({
+          'question': relevantQuestions[i],
+          'feedback': feedbacks[i],
+        });
+      }
 
-//       return response;
-//     } catch (e) {
-//       log(e.toString());
-//     }
-//     return [];
-//   }
+      // log(combinedData.toString(), name: 'combinedData');
 
-  // //Fucntion to map JSON options with question_id
-  // Future<List<Map<String, dynamic>>> fetchOptions(String questionId) async {
-  //   try {
-  //     final response = await client
-  //         .from("feedbacks")
-  //         .select("feedbacks")
-  //         .eq('question_id', questionId)
-  //         .single();
-
-  //     return List<Map<String, dynamic>>.from(response['feedbacks']);
-  //   } catch (e) {
-  //     log(e.toString());
-  //   }
-  //   return [];
-  // }
-
-  //Function to fetch questions
-  Future<List<String>> getQuestionFromQuestionID(
-      List<dynamic> questionIds) async {
-    var response =
-        await client.from('questions').select('question').eq('id', questionIds);
-
-    if (response.isNotEmpty) {
-      return response.map((e) => e['question'].toString()).toList();
-    } else {
-      throw Exception('Failed to fetch questions: $response');
+      // Return combined data
+      return combinedData;
+    } catch (e) {
+      log(e.toString());
+      return [];
     }
   }
+
+  // //Function to fetch questions
+  // Future<List<String>> getQuestionFromQuestionID(
+  //     List<dynamic> questionIds) async {
+  //   var response =
+  //       await client.from('questions').select('question').eq('id', questionIds);
+
+  //   if (response.isNotEmpty) {
+  //     return response.map((e) => e['question'].toString()).toList();
+  //   } else {
+  //     throw Exception('Failed to fetch questions: $response');
+  //   }
+  // }
 }

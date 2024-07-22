@@ -11,7 +11,7 @@ class MyDeptDropDown extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedDepartment = ref.watch(selectedDepartmentProvider);
     return Container(
-      height: 50.0,
+      height: 55.0,
       width: MediaQuery.of(context).size.width * 0.95,
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
@@ -50,7 +50,7 @@ class MycategoryDropDown extends ConsumerWidget {
     String? selectCategory = ref.watch(selectedCategoryProvider);
 
     return Container(
-      height: 50.0,
+      height: 55.0,
       width: MediaQuery.of(context).size.width * 0.95,
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(

@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_feeedback/components/sized.dart';
 import 'package:student_feeedback/model/supabase_function.dart';
 
@@ -25,11 +26,20 @@ class SigninFac extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.grey,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        centerTitle: true,
         title: Text(
           "Faculty Login",
           style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+            color: Colors.grey,
           ),
         ),
       ),
@@ -64,15 +74,20 @@ class SigninFac extends ConsumerWidget {
             ),
             buildHeight(30),
             MaterialButton(
+              height: 50,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),
-              color: const Color(0xff0000FE),
+              color: const Color(0xff5c0f8b),
               minWidth: double.infinity,
               onPressed: () async {
                 String email = emailController.text;
                 String password = passwordController.text;
                 String? department = departmentSelected;
                 final sm = ScaffoldMessenger.of(context);
+
+                // Save isLoggedIn state
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('isLoggedIn', true);
 
                 //supaase function
                 try {
