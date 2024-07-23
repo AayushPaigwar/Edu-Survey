@@ -1,0 +1,55 @@
+name: Flutter CI
+
+# This workflow is triggered on pushes to the repository.
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    # This job will run on ubuntu virtual machine
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the repository.
+      - uses: actions/checkout@v1
+
+      # Setup Java environment in order to build the Android app.
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+
+      # Setup the flutter environment.
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "beta" # 'dev', 'alpha', default to: 'stable'
+          # flutter-version: '1.12.x' # you can also specify exact version of flutter
+
+      # Get flutter dependencies.
+      - run: flutter pub get
+
+      # Build apk.
+      - run: flutter build apk --release
+
+      # Create a new release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v1.0.0" # You can use a dynamic version if needed
+          release_name: "Release v1.0.0"
+          draft: false
+          prerelease: false
+
+      # Upload generated apk to the release assets
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/apk/release/app-release.apk
+          asset_name: app-release.apk
+          asset_content_type: application/vnd.android.package-archive
