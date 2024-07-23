@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student_feeedback/screens/feedback_stu.dart';
 import 'package:student_feeedback/screens/signup/signup_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,23 +22,22 @@ Future<void> main() async {
     anonKey: dotenv.env["SUPABASE_KEY"]!,
   );
 
-  final bool isLoggedIn = await _checkLoginStatus();
+  // final bool isLoggedIn = await _checkLoginStatus();
 
   runApp(
-    ProviderScope(
-      child: MyApp(isLoggedIn: isLoggedIn),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
-Future<bool> _checkLoginStatus() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getBool('isLoggedIn') ?? false;
-}
+// Future<bool> _checkLoginStatus() async {
+//   final prefs = await SharedPreferences.getInstance();
+//   return prefs.getBool('isLoggedIn') ?? false;
+// }
 
 class MyApp extends StatelessWidget {
-  final bool isLoggedIn;
-  const MyApp({required this.isLoggedIn, super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +56,7 @@ class MyApp extends StatelessWidget {
         fontFamily: GoogleFonts.poppins().fontFamily,
         brightness: Brightness.dark,
       ),
-      initialRoute: isLoggedIn ? '/feedbackfac' : '/',
+      initialRoute: '/',
     );
   }
 }

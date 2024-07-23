@@ -37,7 +37,6 @@ dependencies:
   flutter_riverpod: ^2.5.1
   supabase_flutter: ^2.5.1
   flutter_dotenv: ^5.1.0
-  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

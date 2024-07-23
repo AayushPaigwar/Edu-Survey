@@ -83,6 +83,7 @@ class SignInStu extends ConsumerWidget {
                     log("No data found");
                     sm.showSnackBar(
                       const SnackBar(
+                        behavior: SnackBarBehavior.floating,
                         content: Text("No Data Found"),
                       ),
                     );
@@ -91,6 +92,7 @@ class SignInStu extends ConsumerWidget {
                     log("Data found");
                     sm.showSnackBar(
                       const SnackBar(
+                        behavior: SnackBarBehavior.floating,
                         content: Text("Sign In Successfull"),
                       ),
                     );

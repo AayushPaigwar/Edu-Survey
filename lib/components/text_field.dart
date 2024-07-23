@@ -84,6 +84,7 @@ class _MyTextFieldState extends State<MyTextField> {
               _isValid = true;
             });
           }
+          return null;
         },
       ),
     );

@@ -1,11 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_feeedback/components/sized.dart';
 import 'package:student_feeedback/model/supabase_function.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../components/sized.dart';
 import '../provider/provider_const.dart';
 import 'signin/signin_screen.dart';
 
@@ -27,7 +29,7 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
     fetchQuestions();
   }
 
-  void fetchQuestions() async {
+  Future<void> fetchQuestions() async {
     try {
       await SupabaseFunction().getQuestions();
     } catch (e, stackTrace) {
@@ -38,17 +40,17 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     final questionProvider = ref.watch(questionListProvider);
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
             onPressed: () {
               Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SignInScreen(),
-                  ),
-                  (route) => false);
+                context,
+                MaterialPageRoute(builder: (context) => const SignInScreen()),
+                (route) => false,
+              );
             },
             icon: const Icon(Icons.logout),
           ),
@@ -67,27 +69,34 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
                   data: (questions) {
                     return Column(
                       children: [
-                        for (final question in questions)
-                          buildMCQQuestion(question, ref),
+                        Column(
+                          children: questions
+                              .map(
+                                (question) => buildMCQQuestion(question),
+                              )
+                              .toList(),
+                        ),
+                        buildHeight(30),
+                        MaterialButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          color: const Color(0xff5c0f8b),
+                          minWidth: 200,
+                          height: 50,
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              _submitFeedback(context);
+                            }
+                          },
+                          child: const Text("Submit Feedback"),
+                        ),
                       ],
                     );
                   },
-                  loading: () => const CircularProgressIndicator(),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (error, stackTrace) => Text('Error: $error'),
-                ),
-                buildHeight(30),
-                MaterialButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0)),
-                  color: const Color(0xff5c0f8b),
-                  minWidth: 200,
-                  height: 50,
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _submitFeedback(ref);
-                    }
-                  },
-                  child: const Text("Submit Feedback"),
                 ),
               ],
             ),
@@ -97,14 +106,9 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
     );
   }
 
-  Widget buildMCQQuestion(Map<String?, dynamic> question, WidgetRef ref) {
-    final questionsAsyncValue = ref.watch(questionListProvider);
-    int questionIndex = 0;
-
-    if (questionsAsyncValue is AsyncData<List<Map<String, dynamic>>>) {
-      final questions = questionsAsyncValue.value;
-      questionIndex = questions.indexOf(question as Map<String, dynamic>);
-    }
+  Widget buildMCQQuestion(Map<String, dynamic> question) {
+    final questionIndex =
+        ref.read(questionListProvider).value?.indexOf(question) ?? 0;
 
     return Card(
       elevation: 4,
@@ -115,25 +119,28 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              question['question'],
+              question['question'] ?? '',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8.0),
-            for (final option in question['options'])
-              RadioListTile<String>(
+            ...List.generate(
+              (question['options'] as List).length,
+              (index) => RadioListTile<String>(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                title: Text(option),
-                value: option,
+                title: Text(question['options'][index]),
+                value: question['options'][index],
                 groupValue: _selectedAnswers[questionIndex],
-                onChanged: (value) =>
-                    setState(() => _selectedAnswers[questionIndex] = value!),
+                onChanged: (value) => setState(() {
+                  _selectedAnswers[questionIndex] = value!;
+                }),
                 activeColor: const Color(0xff5c0f8b),
               ),
+            ),
             const Divider(),
           ],
         ),
@@ -141,43 +148,50 @@ class _StudentFeedbackScreenState extends ConsumerState<StudentFeedbackScreen> {
     );
   }
 
-  void _submitFeedback(WidgetRef ref) async {
+  Future<void> _submitFeedback(BuildContext context) async {
     final questionsAsyncValue = ref.read(questionListProvider);
     final client = Supabase.instance.client;
     final studentId = ref.read(studentIdProvider);
 
-    if (questionsAsyncValue is AsyncData) {
-      var questions = questionsAsyncValue.value;
+    if (questionsAsyncValue is AsyncData<List<Map<String, dynamic>>>) {
+      final questions = questionsAsyncValue.value;
+      final feedbackList = List.generate(
+        questions.length,
+        (i) => _selectedAnswers[i],
+      );
+      final questionIds = questions.map((q) => q['id']).toList();
 
-      var feedbackList = questions!.asMap().entries.map((entry) {
-        int i = entry.key;
-        return _selectedAnswers[i];
-      }).toList();
-      var questionIds = questions.map((question) => question['id']).toList();
+      // Validate that all questions have been answered
+      if (feedbackList.any((answer) => answer.isEmpty)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text('Please select an option for all questions'),
+          ),
+        );
+        return;
+      }
 
-      var feedbacks = {
+      final response = await client.from('feedback').upsert({
         'student_id': studentId,
         'question_id': questionIds,
         'feedbacks': feedbackList,
-      };
-
-      log(_selectedAnswers.toString());
-
-      var response = await client.from('feedback').upsert(feedbacks);
+      });
 
       if (response != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            behavior: SnackBarBehavior.floating,
             content: Text('Failed to submit feedback: $response'),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
+            behavior: SnackBarBehavior.floating,
             content: Text('Feedback submitted successfully'),
           ),
         );
-
         Navigator.pushNamed(context, '/');
       }
     }

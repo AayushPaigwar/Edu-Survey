@@ -139,6 +139,7 @@ class SignupScreen extends ConsumerWidget {
   void showSuccessMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
+        behavior: SnackBarBehavior.floating,
         content: Text("Signup Successful, Please Login"),
       ),
     );
@@ -147,6 +148,7 @@ class SignupScreen extends ConsumerWidget {
   void showFailureMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
+        behavior: SnackBarBehavior.floating,
         content: Text("Signup Failed, Please try again"),
       ),
     );
