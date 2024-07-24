@@ -42,11 +42,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Student Feedback',
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => const SignInScreen(),
         '/signinstu': (context) => const SignInStu(),
-        '/signinfac': (context) => SigninFac(),
+        '/signinfac': (context) => const SigninFac(),
         '/signup': (context) => SignupScreen(),
         '/feedbackstu': (context) => const StudentFeedbackScreen(),
         '/feedbackfac': (context) => const ViewFeedBack(),

@@ -1,4 +1,4 @@
-package com.example.student_feeedback
+package com.student_feeedback.system
 
 import io.flutter.embedding.android.FlutterActivity
 
