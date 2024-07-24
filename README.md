@@ -1,5 +1,9 @@
 # School Feedback Management System
 
+![Thumbnial](https://github.com/user-attachments/assets/f3ff3e5c-1736-4f69-bb13-427cab87b294)
+
+
+
 A Cross Platfrom Mobile application Developed for School Feedback Management with separate login and signup for faculty and students. 
 Built with Flutter and Supabase for secure backend services.
 
