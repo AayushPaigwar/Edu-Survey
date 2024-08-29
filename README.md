@@ -1,4 +1,4 @@
-# School Feedback Management System
+# School Feedback Management System - EduSurvey
 
 ![Thumbnial](https://github.com/user-attachments/assets/f3ff3e5c-1736-4f69-bb13-427cab87b294)
 
