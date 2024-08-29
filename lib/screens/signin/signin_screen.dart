@@ -18,10 +18,30 @@ class SignInScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            //feedback icon
+            // icon
+            // ClipRRect(
+            //   borderRadius: BorderRadius.circular(20.0),
+            //   child: Image.asset(
+            //     'assets/images/edusurvey.png',
+            //     height: 100,
+            //     width: 100,
+            //   ),
+            // ),
+
+            //welcome text
+            buildHeight(MediaQuery.of(context).size.height * 0.05),
+            Text(
+              "Welcome to EduSurvey",
+              style: GoogleFonts.poppins(
+                  fontSize: 25.0,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500),
+            ),
+
+            buildHeight(MediaQuery.of(context).size.height * 0.15),
 
             Text(
               "LOGIN AS A",

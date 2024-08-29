@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Student Feedback',
+      title: 'EduSurvey',
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => const SignInScreen(),
