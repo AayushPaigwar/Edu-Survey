@@ -1,4 +1,4 @@
-package com.student_feeedback.system
+package com.edusurvey.system
 
 import io.flutter.embedding.android.FlutterActivity
 

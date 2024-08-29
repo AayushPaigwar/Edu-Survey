@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:student_feeedback/screens/feedback_stu.dart';
-import 'package:student_feeedback/screens/signup/signup_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'screens/feedback_fac.dart';
+import 'screens/feedback_stu.dart';
 import 'screens/signin/signin_fac.dart';
 import 'screens/signin/signin_screen.dart';
 import 'screens/signin/signin_stu.dart';
+import 'screens/signup/signup_screen.dart';
 import 'screens/viewfeedback.dart';
 
 Future<void> main() async {

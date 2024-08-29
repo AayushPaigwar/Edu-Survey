@@ -4,10 +4,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student_feeedback/model/supabase_function.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../components/sized.dart';
+import '../model/supabase_function.dart';
 import '../provider/provider_const.dart';
 import 'signin/signin_screen.dart';
 

@@ -4,11 +4,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:student_feeedback/screens/feedback_stu.dart';
 
 import '../../components/text_field.dart';
 import '../../model/supabase_function.dart';
 import '../../provider/provider_const.dart';
+import '../feedback_stu.dart';
 
 class SignInStu extends ConsumerWidget {
   const SignInStu({super.key});

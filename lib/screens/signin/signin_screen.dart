@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:student_feeedback/components/sized.dart';
+
+import '../../components/sized.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
